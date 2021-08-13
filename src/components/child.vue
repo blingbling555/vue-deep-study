@@ -1,6 +1,7 @@
 <template>
   <div>
     <button @click="sayHi">say hi</button>
+    <div>{{ $attrs.msg}}</div>
   </div>
 </template>
 
