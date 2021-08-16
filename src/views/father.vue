@@ -16,9 +16,11 @@
 <script>
 // @ is an alias to /src
 import Child from '@/components/child.vue'
-import KInput from '@/KInput'
-import KFormItem from '@/KFormItem'
-import KForm from '@/KForm'
+import KInput from '@/KForm/KInput'
+import KFormItem from '@/KForm/KFormItem'
+import KForm from '@/KForm/KForm'
+import create from "@/utils/create";
+import Notice from "@/components/Notice";
 export default {
   name: 'child',
   components: {
@@ -44,7 +46,12 @@ export default {
     submitForm() {
       this.$refs['loginForm'].validate(valid => {
         if (valid) {
-          alert("请求登录!");
+          const notice = create(Notice, {
+            title: "社会你杨哥喊你来搬砖",
+            message: valid ? "请求登录!" : "校验失败!",
+            duration: 1000
+          });
+          notice.show();
         } else {
           alert("校验失败！");
         }

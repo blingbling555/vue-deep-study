@@ -45,7 +45,7 @@ export default {
   destroyed () {
     if (this.prop) {
       // 派发事件通知Kform,移除一个KFormItem实例
-      this.dispatch('kkb.form.removeField', 'KForm', [this])
+      this.dispatch('KForm','kkb.form.removeField',  [this])
     }
   },
   methods: {
