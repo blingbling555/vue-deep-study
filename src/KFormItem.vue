@@ -14,9 +14,12 @@
 * label: '显示名称‘
 * prop: 不是必填，主要用来做检验
 * */
+import emitter from '@/mixins/emitter'
 import Schema from "async-validator";
 export default {
   name: "KFormItem",
+  componentName: 'KFormItem',
+  mixins: [emitter],
   inject: ['form'],
   props: {
     label: {
@@ -32,6 +35,18 @@ export default {
   },
   mounted () {
     this.$on('validate', () => { this.validate() })
+
+    if (this.prop) {
+      //  派发事件通知Kform,新增一个KFormItem实例
+      this.dispatch('KForm', 'kkb.form.addField',[this])
+    }
+
+  },
+  destroyed () {
+    if (this.prop) {
+      // 派发事件通知Kform,移除一个KFormItem实例
+      this.dispatch('kkb.form.removeField', 'KForm', [this])
+    }
   },
   methods: {
     validate () {
