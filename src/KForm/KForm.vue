@@ -29,7 +29,7 @@ export default {
       this.fileds.push(item)
     })
     this.$on('kkb.form.removeField', (item) => {
-      this.fields.splice(this.fields.indexOf(item), 1);
+      this.fields?.splice?.(this.fields.indexOf(item), 1);
     })
   },
   methods: {
