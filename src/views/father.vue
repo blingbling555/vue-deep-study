@@ -9,6 +9,10 @@
         <KInput v-model="formData.password" placeholder="请输入密码" type="password"/>
       </KFormItem>
     </KForm>
+    <div >显示store的state里面的值 {{ $store.state.counter }}</div>
+    <div @click="$store.commit('updateCounter', 12)">commit调用</div>
+    <div @click="$store.dispatch('dispatchCounter', 200)">dispatch调用</div>
+<!--    <div>显示store的getters里面的值 {{ $store.getters.doubleCounter }}</div>-->
     <button @click="submitForm">提交</button>
   </div>
 </template>
@@ -41,6 +45,12 @@ export default {
         password: [{required: true, message: '密码不能为空'}]
       }
     }
+  },
+  mounted () {
+    console.log(this.$store)
+    setTimeout(() => {
+      this.$store.commit('updateCounter', this.$store.state.counter + 1)
+    }, 3000)
   },
   methods: {
     submitForm() {
