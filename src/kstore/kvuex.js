@@ -2,16 +2,36 @@ let Vue;
 
 class Store {
   constructor (options) {
+    this._mutations = options.mutations
+    this._actions = options.actions
+    this._wrappedGetters = options.getters
+
+    // 定义computed选项
+    const computed = Object.create(null)
+    this.getters = Object.create(null)
+    const store = this
+
+    Object.keys(this._wrappedGetters).forEach(key => {
+      // 获取用户定义的getters
+      const fn = store._wrappedGetters[key]
+      //  转换为computed的无参数的形式
+      computed[key] = function() {
+        return fn(store.state)
+      }
+    //  为getters定义只读属性
+      Object.defineProperty(store.getters, key, {
+        get: () => store._vm[key]
+      })
+    })
+
     this._vm = new Vue({
       data: {
         // 这个$$不会挂载到vue实例上
         $$state: options.state
-      }
+      },
+      computed
     })
-    this._mutations = options.mutations
-    this._actions = options.actions
 
-   const store = this;
     const { commit, dispatch } = store
     this.commit= function bindCommit() {
       return commit.call(store, ...arguments)

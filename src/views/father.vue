@@ -12,7 +12,7 @@
     <div >显示store的state里面的值 {{ $store.state.counter }}</div>
     <div @click="$store.commit('updateCounter', 12)">commit调用</div>
     <div @click="$store.dispatch('dispatchCounter', 200)">dispatch调用</div>
-<!--    <div>显示store的getters里面的值 {{ $store.getters.doubleCounter }}</div>-->
+    <div>显示store的getters里面的值 {{ $store.getters.doubleCounter }}</div>
     <button @click="submitForm">提交</button>
   </div>
 </template>
