@@ -22,3 +22,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### vue响应式方法
+- Object.defineProperty
+- Vue.util.defineReactive
+- Vue.observable
+- new Vue

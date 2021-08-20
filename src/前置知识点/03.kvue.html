@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../kvue"></script>
+</head>
+<body>
+    <div id="app">
+        <p>{{msg}}</p>
+        <p k-text="msg"></p>
+        <p k-html="msgHtml"></p>
+    </div>
+    <script>
+        const app = new KVue({
+          el: '#app',
+          data: {
+            msg: 0,
+            msgHtml: '<span style="color: red;">颜色</span>'
+          }
+        })
+        setInterval(() => {
+          app.msg = app.msg + 1
+        }, 1000)
+        console.log(app)
+    </script>
+</body>
+</html>
