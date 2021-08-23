@@ -1,9 +1,22 @@
-function observe(obj) {
-  if (typeof obj !== 'object' || obj === null) {
+// 1. 替换数组原型中7个方法
+const orginalProto  = Array.prototype
+const methodsToPatch  = ['push', 'pop', 'shift', 'splice', 'sort', 'reverse', 'unshift']
+const arrayProto = Object.create(orginalProto)
+methodsToPatch.forEach(method => {
+  arrayProto[method] = function() {
+    orginalProto[method].apply(this, arguments)
+    //  覆盖操作：通知更新
+    console.log('数组执行' + method + ':' + JSON.stringify(arguments || []), obj)
+  }
+})
+
+function observe(data) {
+  if (typeof data !== 'object' || data === null) {
     return
   }
   // 每次遍历一个对象属性就创建一个Ob实例
-  new Observer(obj)
+  new Observer(data)
+
 }
 const arrDefineList = ['push', 'pop', 'shift', 'splice', 'sort', 'reverse', 'unshift']
 const watchers = []
@@ -62,7 +75,9 @@ class KVue {
 class Observer {
   constructor (value) {
     this.value = value
-    this.walk(value)
+    if (typeof value === 'object') {
+      this.walk(value)
+    }
   }
   walk(obj) {
     Object.keys(obj).forEach(key => {
@@ -143,7 +158,21 @@ class Compile {
         let dirName = attrName.substring(2)
         this[dirName]?.(node, exp)
       }
+    //  事件处理
+      if (this.isEvent(attrName)) {
+        const dirName = attrName.substring(1) // @click 得到click
+        this.eventHandler(node, exp, dirName)
+
+      }
     })
+  }
+  isEvent(attrName) {
+    return attrName.indexOf('@') === 0
+  }
+  eventHandler(node, exp, dirName) {
+    const fn = this.$vm.$options.methods?.[exp]
+    node.addEventListener(dirName, fn.bind(this.$vm))
+    this[dirName]
   }
   isDir(attrName) {
     return attrName.indexOf('k-') > -1
@@ -156,6 +185,23 @@ class Compile {
   //  k-html指令执行
   html(node, exp) {
     this.update(node, exp, 'html')
+  }
+
+//  k-model指令
+  model(node, exp) {
+  //  update只完成赋值和更新
+    this.update(node, exp, 'model')
+  //  事件监听
+    node.addEventListener('input', e => {
+    //  叫新的值赋值给数据即可
+      this.$vm[exp] = e.target.value
+    })
+  }
+
+  modelUpdater(node, value) {
+  //   表单元素赋值
+    node.value = value
+
   }
 }
 

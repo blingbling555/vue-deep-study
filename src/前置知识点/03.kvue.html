@@ -7,16 +7,26 @@
 </head>
 <body>
     <div id="app">
-        <p>{{msg}}</p>
+        <p @click="clickHandle">{{msg}}</p>
         <p k-text="msg"></p>
         <p k-html="msgHtml"></p>
+        <input type="text" k-model="desc" />
+        <div>
+            {{desc}}
+        </div>
     </div>
     <script>
         const app = new KVue({
           el: '#app',
           data: {
             msg: 0,
-            msgHtml: '<span style="color: red;">颜色</span>'
+            msgHtml: '<span style="color: red;">颜色</span>',
+            desc: '12'
+          },
+          methods: {
+            clickHandle() {
+              console.log('方法打印')
+            }
           }
         })
         setInterval(() => {

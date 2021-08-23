@@ -8,23 +8,42 @@
   <div id="app"></div>
   <script>
     const app = document.querySelector('#app')
+    // 数组响应式
+    // 1. 替换数组原型中7个方法
+    const orginalProto  = Array.prototype
+    const methodsToPatch  = ['push', 'pop', 'shift', 'splice', 'sort', 'reverse', 'unshift']
+
+    const arrayProto = Object.create(orginalProto)
+    methodsToPatch.forEach(method => {
+      arrayProto[method] = function() {
+        orginalProto[method].apply(this, arguments)
+            //  覆盖操作：通知更新
+            console.log('数组执行' + method + ':' + JSON.stringify(arguments || []), obj)
+      }
+    })
     function observe(obj) {
       if (typeof obj !== 'object' || obj === null) {
         return
       }
-      Object.keys(obj).forEach(key => {
-        defineReactive(obj, key, obj[key])
-        if (!obj.__observe__) {
-          obj.__observe__ = true
+      if (Array.isArray(obj)) {
+        // 如果是数组, 重写原型
+        obj.__proto__ = arrayProto
+        // 传入的数据可能是多维度的,也需要执行响应式
+        for (let i = 0; i < obj.length; i++) {
+          observe(obj[i])
         }
-        if (typeof obj[key] === 'object') {
-          observe(obj[key])
-        }
-      })
+      } else {
+        Object.keys(obj).forEach(key => {
+          defineReactive(obj, key, obj[key])
+          if (!obj.__observe__) {
+            obj.__observe__ = true
+          }
+        })
+      }
     }
-    const arrDefineList = ['push', 'pop', 'shift', 'splice', 'sort', 'reverse', 'unshift']
 
     function defineReactive(obj, key, val) {
+      observe(val)
       Object.defineProperty(obj, key, {
         get() {
           return val
@@ -44,8 +63,11 @@
       // foo: 1,
       // bar: 2,
       child: {
-        name: 3
-      }
+        name: 3,
+        age: 12,
+        list: []
+      },
+      list: []
     }
     function set(obj, key, value) {
       defineReactive(obj, key, value)
@@ -55,10 +77,6 @@
     }
 
     observe(obj)
-    console.log(obj)
-    obj.child = {
-      age: 12
-    }
     obj.dong = 'dong'
     set(obj, 'dong', 1)
     setInterval(() => {
@@ -67,8 +85,11 @@
       // obj.child.name = obj.child.name + 1
 
       // obj.child.age = obj.child.age + 1
-      obj.dong = obj.dong + 1
+      // obj.dong = obj.dong + 1
+      // obj.list.push(1)
+
     }, 1000)
+
   </script>
 </body>
 </html>
