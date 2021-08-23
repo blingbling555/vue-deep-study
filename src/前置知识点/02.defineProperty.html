@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const app = document.querySelector('#app')
+    function observe(obj) {
+      if (typeof obj !== 'object' || obj === null) {
+        return
+      }
+      Object.keys(obj).forEach(key => {
+        defineReactive(obj, key, obj[key])
+        if (!obj.__observe__) {
+          obj.__observe__ = true
+        }
+        if (typeof obj[key] === 'object') {
+          observe(obj[key])
+        }
+      })
+    }
+    const arrDefineList = ['push', 'pop', 'shift', 'splice', 'sort', 'reverse', 'unshift']
+
+    function defineReactive(obj, key, val) {
+      Object.defineProperty(obj, key, {
+        get() {
+          return val
+        },
+        set(newVal) {
+          if (newVal !== val) {
+            // 解决赋值为一个新对象，对象里面不是响应式问题
+            observe(newVal)
+            console.log('set', key)
+            val = newVal
+            update()
+          }
+        }
+      })
+    }
+    const obj = {
+      // foo: 1,
+      // bar: 2,
+      child: {
+        name: 3
+      }
+    }
+    function set(obj, key, value) {
+      defineReactive(obj, key, value)
+    }
+    function update() {
+      app.innerHTML = obj.foo + '  bar =  ' + obj.bar + ' name= ' + obj.child.name + ' age= ' + obj.child.age
+    }
+
+    observe(obj)
+    console.log(obj)
+    obj.child = {
+      age: 12
+    }
+    obj.dong = 'dong'
+    set(obj, 'dong', 1)
+    setInterval(() => {
+      // obj.foo = new Date().toLocaleTimeString()
+      // obj.bar = obj.bar + 1
+      // obj.child.name = obj.child.name + 1
+
+      // obj.child.age = obj.child.age + 1
+      obj.dong = obj.dong + 1
+    }, 1000)
+  </script>
+</body>
+</html>
